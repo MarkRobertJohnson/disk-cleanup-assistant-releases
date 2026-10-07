@@ -1,0 +1,3 @@
+# The launcher downloads dca.exe here; a checkout with it would stop
+# updating as a marketplace.
+plugin/bin/
