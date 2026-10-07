@@ -1,0 +1,13 @@
+{
+  "name": "disk-cleanup-assistant",
+  "owner": {
+    "name": "Mark Johnson"
+  },
+  "plugins": [
+    {
+      "name": "disk-cleanup-assistant",
+      "source": "./plugin",
+      "description": "Find what is using disk space on Windows and clean it up safely."
+    }
+  ]
+}
