@@ -8,13 +8,25 @@
 # downloads to a file of its own and only a verified copy is moved into
 # place; a launch that finds the pinned exe already there (or in use by
 # another session) runs that one.
+#
+# Starting the pinned exe uses .NET only, no cmdlets: in the environment
+# Claude Code starts plugins in, loading the modules of Join-Path,
+# Get-Content and ConvertFrom-Json took seconds, and Claude Code takes a
+# server that answers late for one that speaks an older protocol.
 param([Parameter(ValueFromRemainingArguments = $true)] [string[]] $Rest)
 
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
-$bin = Join-Path $root 'bin'
-$exe = Join-Path $bin 'dca.exe'
-$pin = Get-Content -Raw (Join-Path $root 'release.json') | ConvertFrom-Json
+$bin = [IO.Path]::Combine($root, 'bin')
+$exe = [IO.Path]::Combine($bin, 'dca.exe')
+
+# release.json is the plugin's own flat file of three strings.
+$pinText = [IO.File]::ReadAllText([IO.Path]::Combine($root, 'release.json'))
+function Get-PinField([string] $name) {
+    $m = [regex]::Match($pinText, '"' + $name + '"\s*:\s*"([^"]*)"')
+    if (-not $m.Success) { Fail "release.json has no $name" }
+    $m.Groups[1].Value
+}
 
 # .NET directly rather than Get-FileHash, which lives in a script module
 # that Windows PowerShell cannot load when started from PowerShell 7.
@@ -22,7 +34,7 @@ function Get-Sha256([string] $path) {
     $stream = [IO.File]::OpenRead($path)
     try {
         $sha = [Security.Cryptography.SHA256]::Create()
-        -join ($sha.ComputeHash($stream) | ForEach-Object { $_.ToString('x2') })
+        [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-', '').ToLowerInvariant()
     } finally { $stream.Dispose() }
 }
 
@@ -65,9 +77,11 @@ function Get-Release([string] $to) {
     Fail "could not download dca.exe $tag from github.com/$($pin.repo). Check the internet connection; for a private repository, sign in with ``gh auth login``."
 }
 
-function Test-Pinned { (Test-Path -LiteralPath $exe) -and ((Get-Sha256 $exe) -eq $pin.sha256) }
+$pin = @{ version = (Get-PinField 'version'); repo = (Get-PinField 'repo'); sha256 = (Get-PinField 'sha256') }
 
-$dev = Test-Path (Join-Path $bin '.dev')
+function Test-Pinned { [IO.File]::Exists($exe) -and ((Get-Sha256 $exe) -eq $pin.sha256) }
+
+$dev = [IO.File]::Exists([IO.Path]::Combine($bin, '.dev'))
 if (-not ($dev -or (Test-Pinned))) {
     New-Item -ItemType Directory -Force $bin | Out-Null
     # Downloads left by launches that were stopped part way: each is named

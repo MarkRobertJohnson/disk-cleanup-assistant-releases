@@ -1,9 +1,9 @@
 {
-    "name":  "disk-cleanup-assistant",
-    "version":  "0.1.1",
-    "description":  "Find what is using disk space on Windows and clean it up safely.",
-    "author":  {
-                   "name":  "Mark Johnson"
-               },
-    "repository":  "https://github.com/MarkRobertJohnson/disk-cleanup-assistant-releases"
+  "name": "disk-cleanup-assistant",
+  "version": "0.1.2",
+  "description": "Find what is using disk space on Windows and clean it up safely.",
+  "author": {
+    "name": "Mark Johnson"
+  },
+  "repository": "https://github.com/MarkRobertJohnson/disk-cleanup-assistant-releases"
 }

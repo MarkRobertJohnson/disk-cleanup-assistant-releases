@@ -1,14 +1,11 @@
 {
   "mcpServers": {
     "dca": {
-      "command": "powershell",
+      "command": "cmd",
       "args": [
-        "-NoProfile",
-        "-NonInteractive",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${CLAUDE_PLUGIN_ROOT}/launch.ps1",
+        "/d",
+        "/c",
+        "${CLAUDE_PLUGIN_ROOT}/launch.cmd",
         "mcp"
       ]
     }
