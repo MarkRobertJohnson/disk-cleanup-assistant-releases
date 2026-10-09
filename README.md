@@ -18,7 +18,19 @@ On first use, the plugin downloads the `dca.exe` of the release that `plugin/rel
 Scans read the master file table, which needs administrator rights, so each scan asks once through a UAC prompt. To scan without prompts, and to make rescans take seconds, install the scan service once, from a terminal opened as administrator:
 
 ```
-& "$env:USERPROFILE\.claude\plugins\cache\disk-cleanup-assistant\disk-cleanup-assistant\*\bin\dca.exe" service install
+$dca = Get-ChildItem "$env:USERPROFILE\.claude\plugins\cache\disk-cleanup-assistant\disk-cleanup-assistant\*\bin\dca.exe" | Sort-Object LastWriteTime | Select-Object -Last 1
+& $dca service install
 ```
 
 The service only reads: it scans drives for the user signed in at the screen and never changes a file. `dca service uninstall` removes it.
+
+## Update
+
+In a terminal (not inside a Claude Code session), then restart Claude Code:
+
+```
+claude plugin marketplace update disk-cleanup-assistant
+claude plugin update disk-cleanup-assistant@disk-cleanup-assistant
+```
+
+Or in Claude Code, open `/plugin`, choose **Installed**, then **disk-cleanup-assistant**, then **Update now**. There is no update command to type in a session: `/plugin` followed by anything but install, uninstall, enable, disable or marketplace just opens that menu. If you installed the scan service, run its install command again afterwards so the service runs the new build.
