@@ -9,7 +9,7 @@ This repository holds the release builds of `dca.exe` and the plugin marketplace
 In Claude Code on Windows:
 
 ```
-/plugin marketplace add MarkRobertJohnson/disk-cleanup-assistant-releases
+/plugin marketplace add Automate-Pros/disk-cleanup-assistant-releases
 /plugin install disk-cleanup-assistant@disk-cleanup-assistant
 ```
 
